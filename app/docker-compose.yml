@@ -1,0 +1,33 @@
+version: "3.7"
+
+services:
+  # Este servicio correponse al siguiente comando desde docker
+  # docker run -dp 3000:3000 --network todo-app  -w /app -v "$(pwd):/app" node:12-alpine sh -c "yarn install && yarn run dev" 
+  app: # Nombre del servicio, este se convIERTE automaticamente en el network alias
+    image: node:12-alpine
+    command: sh -c "yarn install && yarn run dev"
+    ports:
+      - 3001:3000
+    working_dir: /app
+    volumes:
+      - ./:/app # Bind mounts ./ todo lo que se encuentra en la ruta padre de este archivo .yml -> copiarlo al workdir /app creado
+    environment: 
+      MYSQL_HOST: mysql #nombre del network allias
+      MYSQL_USER: root
+      MYSQL_PASSWORD: secretPassword
+      MYSQL_DB: todos
+ # Este servicio corresponde al siguiente comando
+ # docker run -d --network todo-app --network-alias mysql -v todo-mysql-data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=secretPassword -e MYSQL_DATABASE=todos mysql:5.7
+  mysql: # correspinde automaticamente a: --network-alias mysql 
+    image: mysql:5.7
+    volumes:
+      - todo-mysql-data:/var/lib/mysql # named volumes
+    environment: 
+      MYSQL_ROOT_PASSWORD: secretPassword
+      MYSQL_DATABASE: todos
+
+volumes:
+  # Se crea el volumen name para el servicio mysql
+  todo-mysql-data:
+  
+  
